@@ -1,0 +1,30 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Title:</b>
+  <%= @video.title %>
+</p>
+
+<p>
+  <b>Url:</b>
+  <%= @video.url %>
+</p>
+
+<p>
+  <b>Publishdate:</b>
+  <%= @video.publishdate %>
+</p>
+
+<p>
+  <b>Thumbnailurl:</b>
+  <%= @video.thumbnailurl %>
+</p>
+
+<p>
+  <b>View:</b>
+  <%= @video.view %>
+</p>
+
+
+<%= link_to 'Edit', edit_video_path(@video) %> |
+<%= link_to 'Back', videos_path %>
