@@ -1,11 +1,9 @@
 WebService::Application.routes.draw do
 
-  resources :trends
-
-
-  resources :videos
-
-
 get 'sample' => 'temps#sample'
+
+get 'helpbasic' => 'temps#helpbasic'
+
+get 'help' => 'temps#help'
 
 end
