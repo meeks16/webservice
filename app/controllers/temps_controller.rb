@@ -2,11 +2,11 @@ class TempsController < ApplicationController
 
 	def sample 
 	
-    #@temps = Temp.find(params[:id])
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.json { render json: @temps.to_json }
-    end
-  end
+	# @temps = Temp.all
+# 	  respond_to do |format|
+#     #format.html
+#     format.json render :partial => "temps/sample.json"
+#     render :file => "sample.json.erb", :content_type => 'application.json.erb'
+#   end
+end
 end
