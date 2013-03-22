@@ -1,83 +1,95 @@
 class TrendsController < ApplicationController
-  # GET /trends
-  # GET /trends.json
-  def index
-    @trends = Trend.all
+	
+    	require "twitter"
+    	require "json"
+    	require "open-uri"
+    	require "youtube_it"
+    	require "rubygems"
+    	
+	class Panel
+				attr_accessor :videos, :id, :boardId, :title, :description, :url, :thumbnailUrl
+		
+	end
+	
+	class Video
+	attr_accessor :id, :panelId, :title, :description, :url, :thumbnailUrl, :publishDate, :numbersOfViews
+	
+	end
 
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render :json => @trends }
-    end
-  end
+	def twitter  
 
-  # GET /trends/1
-  # GET /trends/1.json
-  def show
-    @trend = Trend.find(params[:id])
+		result = JSON.parse(open("https://api.twitter.com/1/trends/daily.json").read)
+        client = YouTubeIt::Client.new(:dev_key => "AI39si788hPeW8wxxarNv9sPbq5uVClERQQArekZkdNRfIEd2sXH4dssEHgsudqqjmuH8RQFVhQALQ2tEYNNp8WcKWFeuQFHdg")
+        
+#         logger.debug("start -----------------")
+       	
+   		# tube = ""
+    	latestTime = result["trends"].keys.first
+    	
+    	
+    	
+    	panelArray = Array.new
+    	idx = 0
+    	
+ 		result["trends"][latestTime].each do |hashItem|
+ 			searchFor = hashItem["name"]
+					
+			videoArray = Array.new
+			vidx = 0
+			
+			logger.debug("--------------" + searchFor)
+			tube = client.videos_by(:query => searchFor)
+			
+			logger.debug(tube.videos.count)
+			if tube.videos.count == 0
+				next
+			end
+			tube.videos.each do |video|
+				
+	 			vid = Video.new
+	 			vid.id = video.object_id
+	 			vid.panelId = "0"
+	 			vid.title = video.title
+	 			vid.description = video.description
+	 			vid.url = video.player_url
+	 			vid.thumbnailUrl = video.thumbnails.first.url
+	 			vid.publishDate = video.published_at
+	 			vid.numbersOfViews = video.view_count
+	 			
+	 			videoArray[vidx] = vid	
+	 			vidx = vidx + 1
+			end	
+			
+			
+			panel = Panel.new
+			panel.videos = videoArray
+			logger.debug("panel video count: " + panel.videos.count.to_s) 			
+			panel.id = 0
+			panel.title = searchFor
+			panel.description = "Twitter"
+		
+		
+			panelArray[idx] =  panel
+			idx = idx + 1
+			
+			if idx > 5
+				break
+			end
+		end
+	
+   		topHash = {"Panels" => "", "Id" => 0, "Title" => "Trending", "Description" => "Trending"}
+   		topHash["Panels"] = panelArray
+   		
 
-    respond_to do |format|
-      format.html # show.html.erb
-      format.json { render :json => @trend }
-    end
-  end
-
-  # GET /trends/new
-  # GET /trends/new.json
-  def new
-    @trend = Trend.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render :json => @trend }
-    end
-  end
-
-  # GET /trends/1/edit
-  def edit
-    @trend = Trend.find(params[:id])
-  end
-
-  # POST /trends
-  # POST /trends.json
-  def create
-    @trend = Trend.new(params[:trend])
-
-    respond_to do |format|
-      if @trend.save
-        format.html { redirect_to @trend, notice: 'Trend was successfully created.' }
-        format.json { render :json => @trend, status: :created, location: @trend }
-      else
-        format.html { render action: "new" }
-        format.json { render :json => @trend.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PUT /trends/1
-  # PUT /trends/1.json
-  def update
-    @trend = Trend.find(params[:id])
-
-    respond_to do |format|
-      if @trend.update_attributes(params[:trend])
-        format.html { redirect_to @trend, notice: 'Trend was successfully updated.' }
-        format.json { head :no_content }
-      else
-        format.html { render action: "edit" }
-        format.json { render :json => @trend.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /trends/1
-  # DELETE /trends/1.json
-  def destroy
-    @trend = Trend.find(params[:id])
-    @trend.destroy
-
-    respond_to do |format|
-      format.html { redirect_to trends_url }
-      format.json { head :no_content }
-    end
-  end
+   		render :json => topHash
+   		
+ 	end
+ 	
+ 	def googlePlus
+ 		resultTrends = JSON.parse(open("http://www.google.com/trends/hottrends/atom/hourly").read)
+ 	
+ 	end
+ 
 end
+# 
+

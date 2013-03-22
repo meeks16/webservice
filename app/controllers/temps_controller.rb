@@ -1,14 +1,14 @@
 class TempsController < ApplicationController
 
-	def sample 
+	def sample
 	
 	end
-	
-	def helpbasic 
-	
-	end
-	
-	def help 
-	
-	end
+# 	
+# 	def helpbasic 
+# 	
+# 	end
+# 	
+# 	def help 
+# 	
+# 	end
 end
