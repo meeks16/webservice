@@ -6,7 +6,7 @@ get 'helpbasic' => 'temps#helpbasic'
 
 get 'help' => 'temps#help'
 
-get 'trends' => 'trends#twitter'
+get 'trends' => 'trends#index'
 
 get 'goog' => 'trends#googlePlus'
 
