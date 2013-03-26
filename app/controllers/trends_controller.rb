@@ -17,9 +17,7 @@ class TrendsController < ApplicationController
 	end
 
 	def index  
-    	panelArray = getPanelsForGooglePlus() + getPanelsForTwitter()
-    	panelArray.sort { |p1, p2| p1.title <=> p2.title }
-    	
+    	panelArray = (getPanelsForGooglePlus() + getPanelsForTwitter()).sort_by {|p| p.title}
  		panelArray.each do |panel|
  			searchFor = panel.title
 			logger.debug("--------------" + searchFor)
@@ -44,12 +42,13 @@ class TrendsController < ApplicationController
  		
  		videoArray = Array.new
 		vidx = 0
-		
-		tube = client.videos_by(:query => searchFor)
-		
+		tube = client.videos_by(:query => searchFor, :time => :today) 
+ 		sortedByDate = tube.videos.sort_by { |i| -i.view_count }
+# 		client.videos_by(:fields => {:published  => ((Date.today)})
+# 		videoArray.sort { |x, y| x.last[:date] <=> y.last[:date] }
 		logger.debug(tube.videos.count)
-		tube.videos.each do |video|
-			
+		sortedByDate.each do |video|
+
  			vid = Video.new
  			vid.id = video.object_id
  			vid.panelId = "0"
@@ -63,6 +62,7 @@ class TrendsController < ApplicationController
  			videoArray[vidx] = vid	
  			vidx = vidx + 1
 		end	
+		
 		return videoArray
  	end
  	
