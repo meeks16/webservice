@@ -61,6 +61,10 @@ class TrendsController < ApplicationController
  			
  			videoArray[vidx] = vid	
  			vidx = vidx + 1
+ 			if (vidx > 15)
+				break
+			end
+
 		end	
 		
 		return videoArray
