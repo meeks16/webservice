@@ -18,6 +18,12 @@ class TrendsController < ApplicationController
 		
 		p = params[:p]
 		source = params[:source]
+		
+		if p == nil
+			p = 10
+		
+		end
+		
 		if source == 'g'
 			panelArray = getPanelsForGooglePlus(p)
 		elsif source == 't'
@@ -58,8 +64,16 @@ class TrendsController < ApplicationController
 		vidx = 0
 		tube = client.videos_by(:query => searchFor, :time => :today) 
  		sortedByDate = tube.videos.sort_by { |i| -i.view_count }
-		logger.debug(tube.videos.count)
+		
 		videoMaxCount = params[:v]
+		
+		if videoMaxCount == nil
+			videoMaxCount = 10
+		
+		end
+		
+		logger.debug(tube.videos.count.to_s + '---videos count')
+		logger.debug(videoMaxCount.to_s  + "video max class")
 		sortedByDate.each do |video|
 		
  			vid = Video.new
@@ -74,6 +88,7 @@ class TrendsController < ApplicationController
  			
  			videoArray[vidx] = vid	
  			vidx = vidx + 1
+ 			
  			if (vidx > videoMaxCount.to_i - 1)
 				break
 			end
