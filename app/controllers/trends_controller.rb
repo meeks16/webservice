@@ -7,7 +7,7 @@ class TrendsController < ApplicationController
     	require "rubygems"
     	
 	class Panel
-		attr_accessor :videos, :id, :boardId, :title, :description, :url, :thumbnailUrl
+		attr_accessor :videos, :id, :boardId, :title, :description, :url, :thumbnailUrl, :popularity
 	end
 	
 	class Video
@@ -29,7 +29,7 @@ class TrendsController < ApplicationController
 		elsif source == 't'
 			panelArray = getPanelsForTwitter(p)
 		else
-			panelArray = (getPanelsForGooglePlus(p) + getPanelsForTwitter(p))
+			panelArray = (getPanelsForGooglePlus(p) + getPanelsForTwitter(p)).sort_by {|p| p.popularity}
 		end
 
     	#panelArray = (getPanelsForGooglePlus() + getPanelsForTwitter())#.sort_by {|p| p.title}
@@ -114,7 +114,7 @@ class TrendsController < ApplicationController
 			panel.id = 0
 			panel.title = hashItem["name"]
 			panel.description = "Twitter"
-		
+			panel.popularity = idx + 1
 			panelArray[idx] =  panel
 			idx = idx + 1
 			if (idx > ((panelMaxCount.to_i) -1))
@@ -140,7 +140,7 @@ class TrendsController < ApplicationController
 			panel.id = 0
 			panel.title = topic
 			panel.description = "GooglePlus"
-		
+			panel.popularity = idx + 1
 			panelArray[idx] =  panel
 			idx = idx + 1
 			if (idx > ((panelMaxCount.to_i) -1))
