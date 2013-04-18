@@ -16,22 +16,27 @@ class TrendsController < ApplicationController
 
 	def index  
 		
-		p = params[:p]
+		maxPanels = params[:p]
 		source = params[:source]
 		
-		if p == nil
-			p = 10
+		if maxPanels == nil
+			maxPanels = 10
+		else 
+			maxPanels = maxPanels.to_i
 		
-		end
-		
-		if source == 'g'
-			panelArray = getPanelsForGooglePlus(p)
-		elsif source == 't'
-			panelArray = getPanelsForTwitter(p)
-		else
-			panelArray = (getPanelsForGooglePlus(p) + getPanelsForTwitter(p)).sort_by {|p| p.popularity}
 		end
 
+		if source == 'g'
+			panelArray = getPanelsForGooglePlus(maxPanels)
+		elsif source == 't'
+			panelArray = getPanelsForTwitter(maxPanels)
+		else
+			panelArray = (getPanelsForTwitter(maxPanels) + getPanelsForGooglePlus(maxPanels))
+		end
+		
+		panelArray = panelArray.sort_by {|p| p.popularity}
+		vidsx = 1
+		
     	#panelArray = (getPanelsForGooglePlus() + getPanelsForTwitter())#.sort_by {|p| p.title}
     	
    		panelArray.each do |panel|
@@ -41,15 +46,24 @@ class TrendsController < ApplicationController
 			logger.debug("--------------" + searchFor)
  			logger.debug (params[:source])
 			panel.videos = getVideoArrayForTopic(searchFor)
+		
 						
-
-			if (panel.videos.count == 0)
-				panelArray.delete(panel)
-			end	
-			
+			if panel.videos.count > 0 then
+				vidsx = vidsx + 1
+				
+ 			end
+ 			
+ 			logger.debug (vidsx.class)
+ 			logger.debug (maxPanels.class)
+ 			
+ 			if vidsx > maxPanels
+ 				break
+ 			end
 		end
 		
-		panelArray.delete_if { |p| p.videos.count == 0 }
+		
+
+ 		panelArray.delete_if { |p| p.videos.count == 0 }
 		
    		topHash = {"Panels" => "", "Id" => 0, "Title" => "Trending", "Description" => "Trending"}
    		topHash["Panels"] = panelArray
@@ -62,9 +76,9 @@ class TrendsController < ApplicationController
  		
  		videoArray = Array.new
 		vidx = 0
-		tube = client.videos_by(:query => searchFor, :time => :today) 
- 		sortedByDate = tube.videos.sort_by { |i| -i.view_count }
-		
+		vidsx =0
+		tube = client.videos_by(:query => (searchFor.split /(?=[A-Z])/), :time => :today) 
+ 		sortedByViews = tube.videos.sort_by { |i| -i.view_count }		
 		videoMaxCount = params[:v]
 		
 		if videoMaxCount == nil
@@ -74,7 +88,8 @@ class TrendsController < ApplicationController
 		
 		logger.debug(tube.videos.count.to_s + '---videos count')
 		logger.debug(videoMaxCount.to_s  + "video max class")
-		sortedByDate.each do |video|
+				
+		sortedByViews.each do |video|
 		
  			vid = Video.new
  			vid.id = video.object_id
@@ -86,29 +101,33 @@ class TrendsController < ApplicationController
  			vid.publishDate = video.published_at
  			vid.numbersOfViews = video.view_count
  			
- 			videoArray[vidx] = vid	
+ 			videoArray[vidx] = vid
  			vidx = vidx + 1
- 			
+
  			if (vidx > videoMaxCount.to_i - 1)
 				break
 			end
-
 		end	
-		
 		return videoArray
  	end
  	
  	
  	#Gets array of panels for twitter but without videos
+ 	
+ 	
  	def getPanelsForTwitter(panelMaxCount)
- 		result = JSON.parse(open("https://api.twitter.com/1/trends/1.json").read)
+ 		result = JSON.parse(open("https://api.twitter.com/1/trends/daily.json").read)
         logger.debug("------TwitterresultTrends:")
-    	topTen = result.first["trends"]
+#     	topTen = result.first["trends"]
+    	latestTime = result["trends"].keys.sort.last
+    	
  		panelArray = Array.new 		
     	idx = 0
-    	#latestTime = result["trends"].keys.first
+    	
+#      	splitTopTen = topTen.split /(?=[A-Z])/
 
- 		topTen.each do |hashItem|
+ 		result["trends"][latestTime].each do |hashItem|
+#  	 	splitTopTen.each do |hashItem|
 			panel = Panel.new
 			panel.videos = []		
 			panel.id = 0
@@ -117,10 +136,13 @@ class TrendsController < ApplicationController
 			panel.popularity = idx + 1
 			panelArray[idx] =  panel
 			idx = idx + 1
+			
 			if (idx > ((panelMaxCount.to_i) -1))
 				break
 			end
+			
 		end
+		
 		return panelArray
  	end
  	
@@ -149,6 +171,7 @@ class TrendsController < ApplicationController
 			
  			logger.debug("---: " + topic)
 		end
+		
  		return panelArray	
  		
  	end
