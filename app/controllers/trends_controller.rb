@@ -77,7 +77,8 @@ class TrendsController < ApplicationController
  		videoArray = Array.new
 		vidx = 0
 		vidsx =0
-		tube = client.videos_by(:query => (searchFor.split /(?=[A-Z])/), :time => :today) 
+		tube = client.videos_by(:query => (searchFor.split /(?=[A-Z])/))# , :time => :today) 
+ 		
  		sortedByViews = tube.videos.sort_by { |i| -i.view_count }		
 		videoMaxCount = params[:v]
 		
