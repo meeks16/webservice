@@ -36,14 +36,10 @@ class TrendsController < ApplicationController
 		
 		panelArray = panelArray.sort_by {|p| p.popularity}
 		vidsx = 1
-		
-    	#panelArray = (getPanelsForGooglePlus() + getPanelsForTwitter())#.sort_by {|p| p.title}
-    	
+		    	
    		panelArray.each do |panel|
  			searchFor = panel.title
- 			
-
-			logger.debug("--------------" + searchFor)
+ 			logger.debug("--------------" + searchFor)
  			logger.debug (params[:source])
 			panel.videos = getVideoArrayForTopic(searchFor)
 		
@@ -77,8 +73,8 @@ class TrendsController < ApplicationController
  		videoArray = Array.new
 		vidx = 0
 		vidsx =0
-		tube = client.videos_by(:query => (searchFor.split /(?=[A-Z])/))# , :time => :today) 
- 		
+		tube = client.videos_by(:query => (searchFor.to_s.split /(?=[A-Z])/))
+ 		logger.debug((searchFor.split /(?= [A-Z])/).to_s + "-----split words" )
  		sortedByViews = tube.videos.sort_by { |i| -i.view_count }		
 		videoMaxCount = params[:v]
 		
@@ -87,8 +83,8 @@ class TrendsController < ApplicationController
 		
 		end
 		
-		logger.debug(tube.videos.count.to_s + '---videos count')
-		logger.debug(videoMaxCount.to_s  + "video max class")
+# 		logger.debug(tube.videos.count.to_s + '---videos count')
+# 		logger.debug(videoMaxCount.to_s  + "video max class")
 				
 		sortedByViews.each do |video|
 		
@@ -110,25 +106,26 @@ class TrendsController < ApplicationController
 			end
 		end	
 		return videoArray
- 	end
- 	
- 	
- 	#Gets array of panels for twitter but without videos
- 	
+ 	end 	
  	
  	def getPanelsForTwitter(panelMaxCount)
- 		result = JSON.parse(open("https://api.twitter.com/1/trends/daily.json").read)
+ 		trendLocation = params[:woeid]
+ 		
+ 		if trendLocation == nil
+ 			result = JSON.parse(open("https://api.twitter.com/1/trends/1.json").read)
+ 		end
+ 		
+ 		if trendLocation.to_i == 23424977
+ 			result = JSON.parse(open("https://api.twitter.com/1/trends/23424977.json").read)
+ 		end
+ 		
         logger.debug("------TwitterresultTrends:")
-#     	topTen = result.first["trends"]
-    	latestTime = result["trends"].keys.sort.last
-    	
+     	topTen = result.first["trends"]
+#     	latestTime = result["trends"].keys.sort.last
  		panelArray = Array.new 		
     	idx = 0
-    	
-#      	splitTopTen = topTen.split /(?=[A-Z])/
-
- 		result["trends"][latestTime].each do |hashItem|
-#  	 	splitTopTen.each do |hashItem|
+#  		result["trends"][latestTime].each do |hashItem|
+  	 	topTen.each do |hashItem|
 			panel = Panel.new
 			panel.videos = []		
 			panel.id = 0
