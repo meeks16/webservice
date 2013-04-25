@@ -27,11 +27,11 @@ class TrendsController < ApplicationController
 		end
 
 		if source == 'g'
-			panelArray = getPanelsForGooglePlus(maxPanels)
+			panelArray = getPanelsForGoogle(maxPanels)
 		elsif source == 't'
 			panelArray = getPanelsForTwitter(maxPanels)
 		else
-			panelArray = (getPanelsForTwitter(maxPanels) + getPanelsForGooglePlus(maxPanels))
+			panelArray = (getPanelsForTwitter(maxPanels) + getPanelsForGoogle(maxPanels))
 		end
 		
 		panelArray = panelArray.sort_by {|p| p.popularity}
@@ -145,7 +145,7 @@ class TrendsController < ApplicationController
  	end
  	
  	
- 	def getPanelsForGooglePlus(panelMaxCount)
+ 	def getPanelsForGoogle(panelMaxCount)
  		resultTrends = JSON.parse(open("https://ajax.googleapis.com/ajax/services/feed/load?v=1.0&q=http%3A%2F%2Fwww.google.com%2Ftrends%2Fhottrends%2Fatom%2Fhourly").read)
  		
  		logger.debug("------resultTrends:")
@@ -159,7 +159,7 @@ class TrendsController < ApplicationController
 			panel.videos = []		
 			panel.id = 0
 			panel.title = topic
-			panel.description = "GooglePlus"
+			panel.description = "Google"
 			panel.popularity = idx + 1
 			panelArray[idx] =  panel
 			idx = idx + 1
