@@ -11,36 +11,5 @@
 	<%end%>
 	<%end%>
 </div>	
-	
-#         client = YouTubeIt::Client.new(:dev_key => "AI39si788hPeW8wxxarNv9sPbq5uVClERQQArekZkdNRfIEd2sXH4dssEHgsudqqjmuH8RQFVhQALQ2tEYNNp8WcKWFeuQFHdg")
-#        	
-#    		tube = ""
-#    		str = ""
-#    		panelArr = Array.new
-#    		
-#    		latestTime = result["trends"].keys.first
-#    		str += latestTime + "<br />"
-#    		
-#    		idx = 0
-# 		result["trends"][latestTime].each do |arrItem|
-# #creating class for videos and pannels..			
-# 			#str += "-" + arrItem["name"] + "<br />"
-# 			tube = client.videos_by(:query => arrItem["name"])
-# 			panelArr[idx] = Panel.new
-# 			panelArr[idx].id = idx
-#  			panelArr[idx].title = arrItem["name"]
-#  			panelArr[idx].description = "Twitter"
-#  			panelArr[idx].url = "https://api.twitter.com/1/trends/daily.json"
-#  			
-# 			idx = idx + 1
-# 			
-# 			 
-# # 			resultYoutube = JSON.parse(tube)
-# # 			
-# #  			tube["videos"].each do |arrVideo|	     			
-# # 			end
-# 		end
-# 	
-#    				
-#    		render :json => panelArr
+
 </html>

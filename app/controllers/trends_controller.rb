@@ -5,6 +5,7 @@ class TrendsController < ApplicationController
     	require "open-uri"
     	require "youtube_it"
     	require "rubygems"
+    	require "oAuth"
     	
 	class Panel
 		attr_accessor :videos, :id, :boardId, :title, :description, :url, :thumbnailUrl, :popularity
@@ -109,23 +110,34 @@ class TrendsController < ApplicationController
  	end 	
  	
  	def getPanelsForTwitter(panelMaxCount)
+ 	
+		client = Twitter::Client.new(
+			:consumer_key => 'A0UNh1W5VFG5JoH3UATjA',
+	 		:consumer_secret => 'TeegpJ9iomDCN7l4jtCihTif9i0RQKGIGnJLNihZZE',
+	 		:oauth_token => '1152202844-TQsnzb2omGTSVajOM5D719KnwX4d9zklJSzaFkq',
+	 		:oauth_token_secret => 'ZHbTPAuArstU20Rbr4quy1vRZihiNnvgI1EWK98D6c'
+	 	)
+	 	
+	 	usa = client.trends(23424977)
+	 	world = client.trends(1)
+	 	
  		trendLocation = params[:woeid]
  		
  		if trendLocation == nil
- 			result = JSON.parse(open("https://api.twitter.com/1/trends/1.json").read)
+ 			result = world
  		end
  		
  		if trendLocation.to_i == 23424977
- 			result = JSON.parse(open("https://api.twitter.com/1/trends/23424977.json").read)
+ 			result = usa
  		end
  		
         logger.debug("------TwitterresultTrends:")
-     	topTen = result.first["trends"]
+#      	topTen = result.first["trends"]
 #     	latestTime = result["trends"].keys.sort.last
  		panelArray = Array.new 		
     	idx = 0
 #  		result["trends"][latestTime].each do |hashItem|
-  	 	topTen.each do |hashItem|
+  	 	result.each do |hashItem|
 			panel = Panel.new
 			panel.videos = []		
 			panel.id = 0
@@ -146,6 +158,8 @@ class TrendsController < ApplicationController
  	
  	
  	def getPanelsForGoogle(panelMaxCount)
+ 	
+ 		
  		resultTrends = JSON.parse(open("https://ajax.googleapis.com/ajax/services/feed/load?v=1.0&q=http%3A%2F%2Fwww.google.com%2Ftrends%2Fhottrends%2Fatom%2Fhourly").read)
  		
  		logger.debug("------resultTrends:")
