@@ -12,7 +12,8 @@ end
 group :development, :test do
   gem  "sqlite3"
 end
-gem 'twitter'
+
+gem 'twitter', '>= 4.8.1'
 gem 'youtube_it'
 
 # Gems used only for assets and not required
