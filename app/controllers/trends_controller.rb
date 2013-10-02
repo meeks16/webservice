@@ -5,7 +5,6 @@ class TrendsController < ApplicationController
     	require "open-uri"
     	require "youtube_it"
     	require "rubygems"
-    	require "oauth"
     	
 	class Panel
 		attr_accessor :videos, :id, :boardId, :title, :description, :url, :thumbnailUrl, :popularity
