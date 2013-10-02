@@ -84,8 +84,6 @@ class TrendsController < ApplicationController
 		
 		end
 		
-# 		logger.debug(tube.videos.count.to_s + '---videos count')
-# 		logger.debug(videoMaxCount.to_s  + "video max class")
 				
 		sortedByViews.each do |video|
 		
@@ -132,11 +130,9 @@ class TrendsController < ApplicationController
  		end
  		
         logger.debug("------TwitterresultTrends:")
-#      	topTen = result.first["trends"]
-#     	latestTime = result["trends"].keys.sort.last
+
  		panelArray = Array.new 		
     	idx = 0
-#  		result["trends"][latestTime].each do |hashItem|
   	 	result.each do |hashItem|
 			panel = Panel.new
 			panel.videos = []		
@@ -193,7 +189,6 @@ class TrendsController < ApplicationController
  		returnArr = []
  		idx = 0
  		topicsArr.each do |arr|
- 			#logger.debug("---: " + topic[0])
  			returnArr[idx] = arr[0] 			
  			idx += 1
 		end
